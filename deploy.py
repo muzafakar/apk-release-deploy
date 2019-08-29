@@ -21,7 +21,7 @@ import argparse
 import requests
 import json
 import re
-from datetime import date
+from datetime import datetime
 
 DROPBOX_ERROR_CODE = 1
 ZAPIER_ERROR_CODE = 2
@@ -153,7 +153,7 @@ def get_app(release_dir):
         return None, None
 
     #app_version = json_data[0][apk_details_key]['versionName']
-    app_version = date.today().strftime("%d_%m_%yY")
+    app_version = datetime.now().strftime("%d_%m_%Y__%H:%M:S")
     app_file = os.path.join(release_dir, json_data[0][apk_details_key]['outputFile'])
     return app_version, app_file
 
