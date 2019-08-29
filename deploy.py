@@ -21,6 +21,7 @@ import argparse
 import requests
 import json
 import re
+from datetime import date
 
 DROPBOX_ERROR_CODE = 1
 ZAPIER_ERROR_CODE = 2
@@ -151,7 +152,8 @@ def get_app(release_dir):
         print("Failed: parsing json in output file")
         return None, None
 
-    app_version = json_data[0][apk_details_key]['versionName']
+    #app_version = json_data[0][apk_details_key]['versionName']
+    app_version = date.today().strftime("%d_%m_%y")
     app_file = os.path.join(release_dir, json_data[0][apk_details_key]['outputFile'])
     return app_version, app_file
 
@@ -171,8 +173,7 @@ def get_target_file_name(app_name, app_version):
     '''
     app_name = app_name.lower()
     app_version = app_version.replace('.', '_')
-    build_date = date.today().strftime("%d_%m_%y")
-    return '{name}_{date}.apk'.format(name=app_name, date=build_date).replace(' ','')
+    return '{name}_{version}.apk'.format(name=app_name, version=app_version).replace(' ','')
 
 
 def get_changes(change_log_path):
