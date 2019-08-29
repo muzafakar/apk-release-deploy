@@ -153,7 +153,7 @@ def get_app(release_dir):
         return None, None
 
     #app_version = json_data[0][apk_details_key]['versionName']
-    app_version = date.today().strftime("%d_%m_%y")
+    app_version = date.today().strftime("%d_%m_%yY")
     app_file = os.path.join(release_dir, json_data[0][apk_details_key]['outputFile'])
     return app_version, app_file
 
