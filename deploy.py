@@ -153,7 +153,7 @@ def get_app(release_dir):
         return None, None
 
     #app_version = json_data[0][apk_details_key]['versionName']
-    app_version = datetime.now().strftime("%d_%m_%Y__%H:%M:S")
+    app_version = datetime.now().strftime("%d_%m_%Y__%H:%M:%S")
     app_file = os.path.join(release_dir, json_data[0][apk_details_key]['outputFile'])
     return app_version, app_file
 
@@ -242,6 +242,19 @@ def get_email(app_name, app_version, app_url, changes, template_file_path):
     
     return subject.rstrip(), body.rstrip()
 
+def parseRecipientEmail(target_email_path):
+    emails =  ''
+    file  =  ''
+
+    with(open(target_email_path)) as target_email:
+        file  =  target_email.read()
+
+    for line in file.splitlines():
+        emails  += line
+        emails  +=  ','
+
+    return emails
+
 
 if __name__ == '__main__':
     # Command line arguments
@@ -253,7 +266,8 @@ if __name__ == '__main__':
     parser.add_argument('--dropbox.token', dest='dropbox_token', help='dropbox access token', required=True)
     parser.add_argument('--dropbox.folder', dest='dropbox_folder', help='dropbox target folder', required=True)
     parser.add_argument('--zapier.hook', dest='zapier_hook', help='zapier email web hook', required=True)
-    parser.add_argument('--email.to', dest='email_to', help='email recipients', required=True)
+    # parser.add_argument('--email.to', dest='email_to', help='email recipients', required=True)
+    parser.add_argument('--email.target', dest='email_target', help='target emails file path', required=True)
 
     options = parser.parse_args()
 
@@ -278,7 +292,12 @@ if __name__ == '__main__':
     subject, body = get_email(options.app_name, app_version, file_url, latest_changes, options.template_file)
     if subject == None or body == None:
         exit(TEMPLATE_ERROR_CODE)
+
+    # Parse recipient emails
+    emails = parseRecipientEmail(options.email_target)
+    if emails == None:
+        exit(TEMPLATE_ERROR_CODE)
     
     # Send email with release data
-    if not send_email(options.zapier_hook, options.email_to, subject, body):
+    if not send_email(options.zapier_hook, emails, subject, body):
         exit(ZAPIER_ERROR_CODE)
